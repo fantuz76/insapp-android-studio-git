@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="title_activity_InsertData">Inserire Dati</string>
+    <string name="app_name">INSApp</string>
+    <string name="action_upload">Upload google</string>
+    <string name="action_uploadDB">Caricamento DB su Dropbox</string>
+    <string name="action_sync">Scrivi txt dentro INS_temp</string>
+    <string name="action_sync_db">Sincornizza DB</string>
+    <string name="action_erase_all_db">Cancella tutti DB</string>
+    <string name="action_settings">Impostazioni</string>
+    
+    <string name="action_reportlaunch">Report</string>
+    <string name="action_authDropbox_login">Login Dropbox</string>
+    <string name="action_authDropbox_logout">Logout Dropbox</string>
+    <string name="action_readfileDBlocal">Mostra File locale</string>
+    <string name="action_readfileDBfull">Mostra File full</string>
+    <string name="action_downloadDB">Download DB</string>
+    <string name="action_downloadDBfull">Download DB full</string>
+    <string name="title_activity_read_DB">Dati</string>
+    <string name="title_activity_report">Conti e report</string>
+    <string name="title_activity_MySettings">Impostazioni</string>
+    <string name="title_activity_SyncDB">Sincronizzazione Dati</string>
+    <string name="title_activity_ModifyData">Modifica Dati</string>
+    <string name="strOK">OK>></string>
+    <string name="desc_imgData">Data_image</string>
+    <string name="desc_refresh">refresh_image</string>
+    <string name="titoloData">Data:</string>
+    <string name="titoloDataIntervallo">Date:</string>
+    <string name="titoloTipoOper">Tipo:</string>
+    <string name="titoloChi">Chi fa:</string>
+    <string name="titoloADa">A/Da:</string>
+    <string name="titoloPersonale">C/Pers:</string>
+    <string name="titoloValore">Val[€]:</string>
+    <string name="titoloCategoria">Cat:</string>
+    <string name="titoloDescrizione">Descr:</string>
+    <string name="titoloNote">Note:</string>
+    <string name="action_search">Cerca</string>
+    <string name="action_compose">Componi</string>
+
+</resources>

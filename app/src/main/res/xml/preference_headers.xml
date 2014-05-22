@@ -1,0 +1,42 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:fragment="com.fant.insapp.app.MySettings$DeleteAllDatabase"
+        android:icon="@drawable/ic_delete_file"
+        android:summary="Cancella i file del database locale"
+        android:title="Cancella File Database" />
+    <header
+        android:fragment="com.fant.insapp.app.MySettings$DownloadAllDatabase"
+        android:icon="@drawable/ic_blue_download"
+        android:summary="Download i file del database da Dropbox e sovrascrive quelli in locale"
+        android:title="Download File Database" />
+    <header
+        android:fragment="com.fant.insapp.app.MySettings$Prefs1Fragment"
+        android:icon="@drawable/ic_money"
+        android:key="Database"
+        android:summary="An example of some preferences."
+        android:title="Gestione dei file di Database" >
+
+        <!--
+             Arbitrary key/value pairs can be included with a header as
+             arguments to its fragment.
+        -->
+        <extra
+            android:name="someKey"
+            android:value="someHeaderValue" />
+    </header>
+    <header
+        android:icon="@drawable/ic_money"
+        android:summary="Start intent sito web google"
+        android:title="Sito Web" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://www.google.com" />
+    </header>
+    <header
+        android:fragment="com.fant.insapp.app.MySettings$Prefs2Fragment"
+        android:summary="Info about"
+        android:title="Versione app" >
+    </header>
+
+</preference-headers>

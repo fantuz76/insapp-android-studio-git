@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="10" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/dataText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="22"                
+                android:gravity="left"
+                android:text="2014-12-12"
+                android:textColor="@color/LightYellow"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/tipooperazioneText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="20"
+                android:gravity="left"
+                android:text="Spostamento"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/chifaText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="13"
+                android:gravity="center"
+                android:text="Fineco"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/adaText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="10"
+                android:gravity="center"
+                android:text="Conad"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/cpersText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:text="JB"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/valoreText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="17"
+                android:gravity="right"
+                android:textColor="@color/LightRed"
+                android:text="1900.00"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/categoriaText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="2"
+                android:gravity="left"
+                android:textColor="@color/LightBlue"
+                android:text="Medicine" />
+
+            <TextView
+                android:id="@+id/descrizioneText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textColor="@color/LightGreen"
+                android:text="prova Categoria varia"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/noteText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="conti OK siamo pari"
+                android:textStyle="italic" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

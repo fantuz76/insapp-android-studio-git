@@ -1,0 +1,65 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="CustTextLabel" parent="AppBaseTheme">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#123321</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:gravity">right</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="CustTextTitle" parent="AppBaseTheme">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">#47BD00</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1.2</item>
+        <item name="android:shadowDy">1.2</item>
+        <item name="android:shadowRadius">1.2</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <color name="TitleGreen">#47BD00</color>
+    <color name="TitleYellow">#D7DF01</color>
+    <color name="LightGray">#BDBDBD</color>
+    <color name="LightGray2">#A4A4A4</color>
+    <color name="LightGreen">#A9F5BC</color>
+    <color name="DarkGray">#2E2E2E</color>
+    <color name="LightRed">#FA5858</color>
+    <color name="LightBlue">#81DAF5</color>
+    <color name="LightYellow">#F2F5A9</color>
+    <color name="LightPink">#F5A9F2</color>
+    <color name="LightOrange">#FAAC58</color>
+    <color name="LightCyan">#A9E2F3</color>
+    
+    
+    
+
+    <style name="CustomThemeReadData" parent="android:Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@color/DarkGray</item>
+        <item name="android:colorBackground">@color/DarkGray</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+
+
+</resources>

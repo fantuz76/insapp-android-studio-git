@@ -1,0 +1,41 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Cerca -->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_83"
+        android:showAsAction="ifRoom"
+        android:title="Cerca"/>
+
+    <!-- Upload -->
+    <item
+        android:id="@+id/action_read_data_upload"
+        android:icon="@drawable/ic_folder_web_upload"
+        android:showAsAction="ifRoom"
+        android:title="Upload Dati"/>
+
+    <!-- Refresh -->
+    <item
+        android:id="@+id/action_refresh"
+        android:showAsAction="never"
+        android:title="Refresh dati"/>
+
+    <!-- Report -->
+    <item
+        android:id="@+id/action_report"
+        android:showAsAction="never"
+        android:title="Reportistica"/>    
+    
+    <!-- Doppie -->
+    <item
+        android:id="@+id/action_doubles"
+        android:showAsAction="never"
+        android:title="Righe Doppie"/>
+
+    <!-- Ordina -->
+    <item
+        android:id="@+id/action_sort_column"
+        android:showAsAction="never"
+        android:title="Ordina colonna"/>
+
+</menu>

@@ -192,16 +192,19 @@ public class MainActivity extends FragmentActivity {
 			// Se Database tutto a posto inizializzo array con valori 
 			myGlobal.DBINSlocal.open();
 			List<String> mylistr; 
-			mylistr = myGlobal.DBINSlocal.fetchValori(MyDatabase.DataINStable.TABELLA_TIPOOPERAZIONE);
+			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_TIPOOPERAZIONE);
 			myGlobal.arrTipoOperazione = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchValori(MyDatabase.DataINStable.TABELLA_CHIFA);
+			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_CHIFA);
 			myGlobal.arrChiFa = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchValori(MyDatabase.DataINStable.TABELLA_CPERSONALI);
+			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_CPERSONALI);
 			myGlobal.arrCPersonale = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchValori(MyDatabase.DataINStable.TABELLA_CATEGORIE);
+			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_CATEGORIE);
 			myGlobal.arrCategoria = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchValori(MyDatabase.DataINStable.TABELLA_ADA);
+			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_ADA);
 			myGlobal.arrADa = mylistr.toArray(new String[0]);
+            mylistr = myGlobal.DBINSlocal.fetchListValoriFromQuery("SELECT Generica FROM " + MyDatabase.DataINStable.TABELLA_CATEGORIE + " GROUP BY Generica ORDER BY Generica");
+            myGlobal.arrGenerica = mylistr.toArray(new String[0]);
+
 			myGlobal.DBINSlocal.close();
 		} else {
 			// in mancanza del DB metto tutti List vuoti
@@ -211,8 +214,9 @@ public class MainActivity extends FragmentActivity {
 			myGlobal.arrChiFa = mylistr.toArray(new String[0]);        	
 			myGlobal.arrCPersonale = mylistr.toArray(new String[0]);        	
 			myGlobal.arrCategoria = mylistr.toArray(new String[0]);        	
-			myGlobal.arrADa = mylistr.toArray(new String[0]);        	
-		}
+			myGlobal.arrADa = mylistr.toArray(new String[0]);
+            myGlobal.arrGenerica = mylistr.toArray(new String[0]);
+        }
 
 
 		spinner = (Spinner) findViewById(R.id.SpinnerTipoOper);
@@ -579,7 +583,7 @@ public class MainActivity extends FragmentActivity {
 
 
 		case R.id.action_uploadDB:        	    		
-			// adesso, una volta caricato lo rinomino cos� resta nella SD del telefono come backup
+			// adesso, una volta caricato lo rinomino così resta nella SD del telefono come backup
 			java.io.File oldFile = new java.io.File(fileNameFull);
 			java.io.File newFile = new java.io.File(fileNameFull.replace(".txt", "_" + myGlobal.formattedDate() + ".txt"));    	    	
 
@@ -713,23 +717,6 @@ public class MainActivity extends FragmentActivity {
 					.show();
 			return true;        		
 
-
-		case R.id.action_sync_INS_temp:
-			//Put up the Yes/No message box
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder    	    	
-			.setTitle(R.string.action_sync)
-			.setMessage("Are you sure?")
-			.setIcon(android.R.drawable.ic_dialog_alert)
-			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {    	    	    	    	    	    	
-					MainActivity.this.progDia = ProgressDialog.show(MainActivity.this, "INS..", "Sync Data...", true);
-					//new updateINS2().execute("");
-				}
-			})
-			.setNegativeButton("No", null)						//Do nothing on no
-			.show();
-			return true;    		
 
 
 

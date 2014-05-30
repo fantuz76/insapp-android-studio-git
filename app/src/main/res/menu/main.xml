@@ -24,11 +24,6 @@
         android:showAsAction="never"
         android:title="@string/action_uploadDB"/>
     <item
-        android:id="@+id/action_sync_INS_temp"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_sync"/>
-    <item
         android:id="@+id/action_authDropbox"
         android:orderInCategory="100"
         android:showAsAction="never"

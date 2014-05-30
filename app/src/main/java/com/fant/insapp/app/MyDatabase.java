@@ -163,7 +163,7 @@ public class MyDatabase {
             mDb.execSQL(_sqlStr, _selectionArgs);                
         } 
         
-        public List<String> fetchValori(String _tabella){ //metodo per fare la query di tutti i dati
+        public List<String> fetchListValori(String _tabella){ //metodo per fare la query di tutti i dati
             List<String> _myls = new ArrayList<String>();
         	/*
             static final String TABELLA_CATEGORIE = "Definizioni_Categoria";
@@ -181,11 +181,25 @@ public class MyDatabase {
         	}
         	return _myls;
         }
-        
-        
-        
 
-        private class DbHelper extends SQLiteOpenHelper { //classe che ci aiuta nella creazione del db
+
+    public List<String> fetchListValoriFromQuery(String _query){ //metodo per fare la query di tutti i dati
+        List<String> _myls = new ArrayList<String>();
+
+        Cursor mycurs = mDb.rawQuery(_query, null);
+
+        if (mycurs.moveToFirst()) {
+            do {
+                _myls.add(mycurs.getString(0));
+            } while (mycurs.moveToNext());
+        }
+        return _myls;
+    }
+
+
+
+
+    private class DbHelper extends SQLiteOpenHelper { //classe che ci aiuta nella creazione del db
 
                 public DbHelper(Context context, String name, CursorFactory factory,int version) {
                         super(context, name, factory, version);

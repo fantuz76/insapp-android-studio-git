@@ -50,6 +50,8 @@ public class myGlobal extends Application
 	public static String[] arrCategoria;	
 	public static String[] arrADa;
 
+    public static String[] arrGenerica;
+
 	public static MyDatabase DBINSlocal;
 
 	Context mContext;

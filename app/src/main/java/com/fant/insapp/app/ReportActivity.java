@@ -122,8 +122,9 @@ public class ReportActivity extends ListActivity {
 			calcoloTotaleCategorie();
 			return true;
 			
-		case R.id.action_cat_gen:	
-			return true;
+		case R.id.action_cat_gen:
+            calcoloTotaleCategorieGeneriche();
+            return true;
 			
 		case R.id.action_conti:	
 			calcoloTotale();
@@ -425,7 +426,7 @@ public class ReportActivity extends ListActivity {
 
 		for (int i = 0; i < myGlobal.arrCategoria.length; i++)			
 		{
-			double _totAnno = getTotPeriodoCategoria(yearInizio, 1, yearFine, 12, "C", myGlobal.arrCategoria[i]);
+			double _totAnno = getTotPeriodoCategoria(yearInizio, 1, yearFine, 12, "", myGlobal.arrCategoria[i]);
 			myReportList.add(new ReportObject(String.valueOf(yearInizio) + "-" + String.valueOf(yearFine) + " " + myGlobal.arrCategoria[i], myGlobal.FloatToStr((float)_totAnno)));
 		}
 
@@ -436,21 +437,63 @@ public class ReportActivity extends ListActivity {
 
 		DBINStoread.close();
 
-	}	
+	}
 
 
-	private float getResultSpesa(String _DataInizio, String _DataFine, String _queryCPers, String _queryChiFa){
+    private void calcoloTotaleCategorieGeneriche () {
+
+        DBINStoread = new MyDatabase(
+                getApplicationContext(),
+                myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator + myGlobal.LOCAL_FULL_DB_FILE);
+
+
+        String DataInizio = "2007-01-11";
+        String DataFine = "2050-12-31";
+
+        DataInizio = editTextDateInizio.getText().toString();
+        DataFine = editTextDateFine.getText().toString();
+
+
+        DBINStoread.open();
+
+
+        ArrayList<ReportObject> myReportList = new ArrayList<ReportObject>();
+
+
+
+        myReportList.clear();
+        myReportList.add(new ReportObject("",""));
+
+
+        String[] datestr = DataInizio.toString().split("-");
+        int yearInizio = Integer.valueOf(datestr[0]);
+        int monthInizio = Integer.valueOf(datestr[1]);
+
+        datestr = DataFine.toString().split("-");
+        int yearFine = Integer.valueOf(datestr[0]);
+        int monthFine = Integer.valueOf(datestr[1]);
+
+        for (int i = 0; i < myGlobal.arrGenerica.length; i++)
+        {
+            double _totAnno = getTotPeriodoCategoriaGenerica(yearInizio, 1, yearFine, 12, "", myGlobal.arrGenerica[i]);
+            myReportList.add(new ReportObject(String.valueOf(yearInizio) + "-" + String.valueOf(yearFine) + " " + myGlobal.arrGenerica[i], myGlobal.FloatToStr((float)_totAnno)));
+        }
+
+        myReportList.add(new ReportObject("",""));
+
+        ReportAdapter myReportAdapter = new ReportAdapter(this, myReportList);
+        setListAdapter(myReportAdapter);
+
+        DBINStoread.close();
+
+    }
+
+    protected float getResultSpesa(String _DataInizio, String _DataFine, String _queryCPers, String _queryChiFa){
 		String _queryTipoOperazione = "Spesa";
-		/*
-		if (_queryChiFa.equals("")){
-			querystr = "SELECT SUM(Valore) AS Total FROM " + MyDatabase.DataINStable.TABELLA_INSDATA + " WHERE " + 
-					" (" + MyDatabase.DataINStable.DATA_OPERAZIONE_KEY + ">='" + _DataInizio + "' AND " + MyDatabase.DataINStable.DATA_OPERAZIONE_KEY + "<='"+ _DataFine + "') AND " +
-					" " + MyDatabase.DataINStable.TIPO_OPERAZIONE_KEY + "='" + _queryTipoOperazione+"' COLLATE NOCASE AND " + 
-					MyDatabase.DataINStable.C_PERS_KEY + "='" + _queryCPers + "' COLLATE NOCASE" ; 			
-		}*/
+
 		querystr = "SELECT SUM(Valore) AS Total FROM " + MyDatabase.DataINStable.TABELLA_INSDATA + " WHERE " + 
 				" (" + MyDatabase.DataINStable.DATA_OPERAZIONE_KEY + ">='" + _DataInizio + "' AND " + MyDatabase.DataINStable.DATA_OPERAZIONE_KEY + "<='"+ _DataFine + "') AND " +
-				" " + MyDatabase.DataINStable.TIPO_OPERAZIONE_KEY + "='" + _queryTipoOperazione+"' COLLATE NOCASE AND " + 
+				" " + MyDatabase.DataINStable.TIPO_OPERAZIONE_KEY + "='" + _queryTipoOperazione+"' COLLATE NOCASE AND " +
 				MyDatabase.DataINStable.C_PERS_KEY + "='" + _queryCPers + "' COLLATE NOCASE AND "+
 				MyDatabase.DataINStable.CHI_FA_KEY + "='" + _queryChiFa + "' COLLATE NOCASE " ; 
 		mycursor = DBINStoread.rawQuery(querystr,  null );
@@ -591,7 +634,47 @@ public class ReportActivity extends ListActivity {
 		}
 
 	}
-	
+
+
+
+    double getTotPeriodoCategoriaGenerica(int _annoStart, int _meseStart, int _annoStop, int _meseStop, String _CPers, String _CatGenerica)
+    {
+        int _annoend = _annoStop, _meseend = _meseStop;
+
+
+        if (_meseend == 12) {
+            _annoend = _annoend + 1;
+            _meseend = 1;
+        }
+        String querystr = "SELECT SUM(CAST(Valore AS REAL)) AS Total FROM myINSData WHERE " +
+                " (DataOperazione>='" + myGlobal.intToString(_annoStart,4) + "-" + myGlobal.intToString(_meseStart,2) + "-01' AND DataOperazione<'" + myGlobal.intToString(_annoend,2) + "-" + myGlobal.intToString(_meseend,2) + "-01') AND " +
+                "TipoOperazione='Spesa' " ;
+        if (_CPers != "")
+        {
+            querystr += " AND CPers='" + _CPers + "'";
+        }
+        if (_CatGenerica != "")
+        {
+            querystr += " AND Generica='" + _CatGenerica + "'";
+        }
+
+
+        mycursor = DBINStoread.rawQuery(querystr,  null );
+        if (mycursor.getCount() == 0) {
+            return 0;
+        } else {
+            mycursor.moveToFirst();
+            if (mycursor.getString(mycursor.getColumnIndex("Total")) == null)
+                return 0;
+            String str = mycursor.getString(mycursor.getColumnIndex("Total"));
+            double retval;
+
+            retval = Float.valueOf(str);
+            return retval;
+        }
+
+    }
+
 	double getTotAnnoCatGenerica(int _anno, String _CatGenerica)
 	{
 		double _res = 0;
@@ -616,7 +699,6 @@ public class ReportActivity extends ListActivity {
 			_annoend = _anno;
 			_meseend = _mese + 1;
 		}
-
 
 		String querystr = "SELECT SUM(CAST(Valore AS REAL)) AS Total FROM myINSData WHERE " +
 				" (DataOperazione>='" + myGlobal.intToString(_anno,4) + "-" + myGlobal.intToString(_mese,2) + "-01' AND DataOperazione<'" + myGlobal.intToString(_annoend,2) + "-" + myGlobal.intToString(_meseend,2) + "-01') AND " +

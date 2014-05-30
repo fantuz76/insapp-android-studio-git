@@ -1,16 +1,5 @@
 package com.fant.insapp.app;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-
-import org.achartengine.model.CategorySeries;
-import org.achartengine.model.TimeSeries;
-
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
@@ -31,7 +20,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.fant.insapp.app.MyDatabase.DataINStable;
+import org.achartengine.model.CategorySeries;
+import org.achartengine.model.TimeSeries;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class ReportActivity extends ListActivity {
 

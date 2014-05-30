@@ -1,17 +1,6 @@
 package com.fant.insapp.app;
 
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +21,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -58,6 +48,15 @@ import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.http.FileContent;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 /*
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CellEntry;
@@ -145,6 +144,7 @@ public class MainActivity extends FragmentActivity {
 	private ProgressDialog progDia = null;
 	TextView textTitle;
 
+    private GestureDetector gestureDetector;
 
 	// *************************************************************************
 	// OnCreate
@@ -156,7 +156,8 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 
 
-
+        gestureDetector = new GestureDetector(
+                new SwipeGestureDetector());
 
 		// We create a new AuthSession so that we can use the Dropbox API.
 		AndroidAuthSession session = buildSession();
@@ -281,6 +282,22 @@ public class MainActivity extends FragmentActivity {
 
 
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (gestureDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void onLeftSwipe() {
+        showToast("Left swipe");
+    }
+
+    private void onRightSwipe() {
+        // Do something
+        showToast("Right swipe");
+    }
 
 	// *************************************************************************
 	// Gestione Activity result (chiamata Activity con result per scelta credenziali Google)
@@ -399,6 +416,42 @@ public class MainActivity extends FragmentActivity {
 
 
 
+
+    // Private class for gestures
+    private class SwipeGestureDetector
+            extends GestureDetector.SimpleOnGestureListener {
+        // Swipe properties, you can change it to make the swipe
+        // longer or shorter and speed
+        private static final int SWIPE_MIN_DISTANCE = 120;
+        private static final int SWIPE_MAX_OFF_PATH = 200;
+        private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
+                               float velocityX, float velocityY) {
+            try {
+                float diffAbs = Math.abs(e1.getY() - e2.getY());
+                float diff = e1.getX() - e2.getX();
+
+                if (diffAbs > SWIPE_MAX_OFF_PATH)
+                    return false;
+
+                // Left swipe
+                if (diff > SWIPE_MIN_DISTANCE
+                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    MainActivity.this.onLeftSwipe();
+
+                    // Right swipe
+                } else if (-diff > SWIPE_MIN_DISTANCE
+                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    MainActivity.this.onRightSwipe();
+                }
+            } catch (Exception e) {
+                Log.e("YourActivity", "Error on gestures");
+            }
+            return false;
+        }
+    }
 
 
 	// *************************************************************************
@@ -581,8 +634,110 @@ public class MainActivity extends FragmentActivity {
 		switch(item.getItemId())
 		{
 
+            case R.id.action_readfileDBlocal:
+                if (myGlobal.statoDBLocal == false) {
+                    showToast("Errore presenza file DB locale! Impossibile procedere.");
+                } else {
+                    myGlobal.ReadTxtActivityLoaded = false;
+                    intent = new Intent(this, ReadTxtActivity.class);
+                    // passo delle informazioni all'Activity
+                    intent.putExtra("readDBtype","local");
+                    startActivity(intent);
+                }
+                return true;
 
-		case R.id.action_uploadDB:        	    		
+
+
+            case R.id.action_readfileDBfull:
+                if (myGlobal.statoDBLocalFull == false) {
+                    showToast("Errore presenza file DB locale! Impossibile procedere.");
+                } else {
+                    myGlobal.ReadTxtActivityLoaded = false;
+                    intent = new Intent(this, ReadTxtActivity.class);
+                    // passo delle informazioni all'Activity
+                    intent.putExtra("readDBtype","full");
+                    startActivity(intent);
+                }
+                return true;
+
+
+            case R.id.action_sync_db:
+
+                AlertDialog.Builder buildersync = new AlertDialog.Builder(MainActivity.this);
+                buildersync
+                        .setTitle("Sincronizzazione nuovi dati locali con il DB cloud")
+                        .setMessage("Sicuro di sincronizzare? " + System.getProperty("line.separator") +
+                                "(possibile perdita di eventuali modifiche al file completo locale)")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if ((myGlobal.statoDBLocal == false) || (myGlobal.statoDBLocalFull == false)) {
+                                    showToast("Errore presenza file DB locale! Impossibile procedere.");
+                                } else {
+                                    // Prima di sincronizzare chiedo se voglio fare la copia in locale
+
+                                    AlertDialog.Builder buildersync = new AlertDialog.Builder(MainActivity.this);
+                                    buildersync
+                                            .setTitle("Backup file")
+                                            .setMessage("Creare una copia nel telefono dei file prima di sincronizzare?" + System.getProperty("line.separator") +
+                                                    "(consigliato anche se occupa memoria)")
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    try {
+                                                        // backup DB Local
+                                                        java.io.File oldFile = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME);
+                                                        java.io.File newFile = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME + "."  + myGlobal.formattedDate() + ".bkup");
+
+                                                        // backup DB full Local
+                                                        java.io.File oldFileFull = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE);
+                                                        java.io.File newFileFull = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE + "."  + myGlobal.formattedDate() + ".bkup");
+
+                                                        myGlobal.copyFiles(oldFile, newFile);
+                                                        myGlobal.copyFiles(oldFileFull, newFileFull);
+                                                        //myGlobal.copyFiles2(oldFile, newFile);
+                                                        //Files.copy(oldFile, newFile);
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                        showToast("Error IOException: " + e.getMessage());
+                                                    }
+
+                                                    // Solo addesso faccio iniziare la sincronizzazione
+                                                    //Intent intent = new Intent(MainActivity.this, SyncDBActivity.class);
+                                                    //startActivity(intent);
+                                                    SyncAllDBData sync = new SyncAllDBData(MainActivity.this);
+                                                    sync.execute();
+                                                }
+                                            })
+                                            .setNegativeButton("No",  new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // Solo addesso faccio iniziare la sincronizzazione
+                                                    //Intent intent = new Intent(MainActivity.this, SyncDBActivity.class);
+                                                    //startActivity(intent);
+                                                    SyncAllDBData sync = new SyncAllDBData(MainActivity.this);
+                                                    sync.execute();
+
+                                                }
+                                            })
+                                            .show();
+
+                                    // l'inizio della intent SyncDBActivity non posso farlo qua altrimenti partirebbe senza aver atteso la risposta
+                                    // alla domanda di backup
+
+                                }
+                            }
+                        })
+                        .setNegativeButton("No", null)						//Do nothing on no
+                        .show();
+                return true;
+
+
+
+
+
+
+
+            case R.id.action_uploadDB:
 			// adesso, una volta caricato lo rinomino così resta nella SD del telefono come backup
 			java.io.File oldFile = new java.io.File(fileNameFull);
 			java.io.File newFile = new java.io.File(fileNameFull.replace(".txt", "_" + myGlobal.formattedDate() + ".txt"));    	    	
@@ -646,106 +801,6 @@ public class MainActivity extends FragmentActivity {
     		return true;
 			 */
 
-
-		case R.id.action_sync_db:
-
-			AlertDialog.Builder buildersync = new AlertDialog.Builder(MainActivity.this);
-			buildersync    	    	
-			.setTitle("Sincronizzazione nuovi dati locali con il DB cloud")
-			.setMessage("Sicuro di sincronizzare? " + System.getProperty("line.separator") +
-					"(possibile perdita di eventuali modifiche al file completo locale)")
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							if ((myGlobal.statoDBLocal == false) || (myGlobal.statoDBLocalFull == false)) {
-								showToast("Errore presenza file DB locale! Impossibile procedere.");
-							} else {
-								// Prima di sincronizzare chiedo se voglio fare la copia in locale
-
-								AlertDialog.Builder buildersync = new AlertDialog.Builder(MainActivity.this);
-								buildersync    	    	
-								.setTitle("Backup file")
-								.setMessage("Creare una copia nel telefono dei file prima di sincronizzare?" + System.getProperty("line.separator") +
-										"(consigliato anche se occupa memoria)")
-										.setIcon(android.R.drawable.ic_dialog_alert)
-										.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog, int which) {
-												try {
-													// backup DB Local													
-													java.io.File oldFile = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME);
-													java.io.File newFile = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME + "."  + myGlobal.formattedDate() + ".bkup");
-
-													// backup DB full Local													
-													java.io.File oldFileFull = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE);
-													java.io.File newFileFull = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE + "."  + myGlobal.formattedDate() + ".bkup");
-
-													myGlobal.copyFiles(oldFile, newFile);
-													myGlobal.copyFiles(oldFileFull, newFileFull);													
-													//myGlobal.copyFiles2(oldFile, newFile);   	    	
-													//Files.copy(oldFile, newFile);
-												} catch (IOException e) {				
-													e.printStackTrace();
-													showToast("Error IOException: " + e.getMessage());
-												}
-
-												// Solo addesso faccio iniziare la sincronizzazione
-												//Intent intent = new Intent(MainActivity.this, SyncDBActivity.class);
-												//startActivity(intent);	
-												SyncAllDBData sync = new SyncAllDBData(MainActivity.this);
-												sync.execute();
-											}    				    	
-										})
-										.setNegativeButton("No",  new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog, int which) {
-												// Solo addesso faccio iniziare la sincronizzazione
-												//Intent intent = new Intent(MainActivity.this, SyncDBActivity.class);
-												//startActivity(intent);
-												SyncAllDBData sync = new SyncAllDBData(MainActivity.this);
-												sync.execute();												
-												
-											}
-										})	
-										.show();
-								
-								// l'inizio della intent SyncDBActivity non posso farlo qua altrimenti partirebbe senza aver atteso la risposta
-								// alla domanda di backup
-
-							}    				    	
-						}
-					})
-					.setNegativeButton("No", null)						//Do nothing on no
-					.show();
-			return true;        		
-
-
-
-
-
-		case R.id.action_readfileDBlocal:
-			if (myGlobal.statoDBLocal == false) {
-				showToast("Errore presenza file DB locale! Impossibile procedere.");
-			} else {
-				myGlobal.ReadTxtActivityLoaded = false;
-				intent = new Intent(this, ReadTxtActivity.class);
-				// passo delle informazioni all'Activity
-				intent.putExtra("readDBtype","local");
-				startActivity(intent);
-			}
-			return true;
-
-
-
-		case R.id.action_readfileDBfull:
-			if (myGlobal.statoDBLocalFull == false) {
-				showToast("Errore presenza file DB locale! Impossibile procedere.");
-			} else {
-				myGlobal.ReadTxtActivityLoaded = false;
-				intent = new Intent(this, ReadTxtActivity.class);
-				// passo delle informazioni all'Activity
-				intent.putExtra("readDBtype","full");
-				startActivity(intent);
-			}
-			return true;
 
 
 

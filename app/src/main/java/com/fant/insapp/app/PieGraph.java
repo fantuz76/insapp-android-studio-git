@@ -1,13 +1,13 @@
 package com.fant.insapp.app;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+
 import org.achartengine.ChartFactory;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
-
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 
 public class PieGraph {
 	CategorySeries series;

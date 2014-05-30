@@ -1,5 +1,16 @@
 package com.fant.insapp.app;
 
+import android.app.AlertDialog;
+import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Environment;
+import android.widget.Toast;
+
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,17 +25,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import android.app.AlertDialog;
-import android.app.Application;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Environment;
-import android.widget.Toast;
-
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.google.common.io.Files;
 
 
 public class myGlobal extends Application

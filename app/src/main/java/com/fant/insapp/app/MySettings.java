@@ -1,8 +1,6 @@
 package com.fant.insapp.app;
 
 
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +14,8 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.List;
 
 
 public class MySettings extends PreferenceActivity {

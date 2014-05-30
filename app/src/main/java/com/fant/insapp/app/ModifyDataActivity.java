@@ -1,12 +1,5 @@
 package com.fant.insapp.app;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -27,6 +20,13 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class ModifyDataActivity extends FragmentActivity {
 
@@ -196,12 +196,7 @@ public class ModifyDataActivity extends FragmentActivity {
     		return true;
 
 	
-    		
 
-
-    	case R.id.action_sync_INS_temp:
-
-    		return true;
 
 
     	case R.id.action_authDropbox:        

@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -41,6 +40,8 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 	private String mErrorMsg;
 	Cursor mycursor;
 	private int faseTask;
+    private enum EnFasePrecisa {INIZIO, DOWNLOADDB, OPENDB, ATTACHDB, UPDATEFULLDB, CATGENERICA, RENDOWNLOADEDDB, COPYFILETOUPLOAD, UPLOADDB, FINE};
+    EnFasePrecisa faseTaskDetail;
 	private MyDatabase DBINSlocal, DBINSdownloaded;
 	private Context mycontext;
 	
@@ -58,15 +59,19 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 
 		mPath = myGlobal.DROPBOX_INS_DIR;
-		faseTask = 0;
-
+        // faseTask indica quale in fase grossolana sono del task (Download, crea DB, Upload)
+        // faseTaskDetail indica in quale fase precisa sono del task (0...n)
+        faseTask = 0;
+        faseTaskDetail = EnFasePrecisa.INIZIO;
 
 		mDialog = new ProgressDialog(mycontext);
 		mDialog.setMax(100);
 		mDialog.setMessage("Sincronizzazione Database ");
 		mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		mDialog.setProgress(0);
+        mCanceled = false;
 
+        /*
 		mDialog.setButton(ProgressDialog.BUTTON_POSITIVE, "Cancel", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -76,6 +81,7 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 				mErrorMsg = "Canceled";
 			}
 		});
+		*/
 
 		mDialog.show();
 	}
@@ -96,7 +102,7 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 			// *******************************
 			// *-*-*-*  Innanzi tutto scarico ultima versione del file da DropBox
-
+            faseTaskDetail = EnFasePrecisa.DOWNLOADDB;
 			// Get the metadata for a directory
 			DropboxAPI.Entry dirent = myGlobal.mApiDropbox.metadata(mPath, 1000, null, true, null);
 
@@ -155,7 +161,7 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 			}
 
 
-
+            if (mCanceled) return false;
 			publishProgress((totProgressLen/2));
 			faseTask++;
 
@@ -170,7 +176,8 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 			// *******************************
 			// *-*-*-* Apertura Database locale e remoto scaricato
-			DBINSlocal = new MyDatabase(
+            faseTaskDetail = EnFasePrecisa.OPENDB;
+            DBINSlocal = new MyDatabase(
 					mycontext, 
 					myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME);
 
@@ -185,7 +192,8 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 			// *******************************
 			// *-*-*-*  Attacco DB Locale al DB scaricato
-			DBINSdownloaded.execSQLsimple("attach database \"" + myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME + "\" as locdbatt");
+            faseTaskDetail = EnFasePrecisa.ATTACHDB;
+            DBINSdownloaded.execSQLsimple("attach database \"" + myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_DB_FILENAME + "\" as locdbatt");
 			// Faccio intersezione tra DB scaricato e DB locale su alcune Colonne
 			mycursor = DBINSdownloaded.rawQuery("SELECT DataOperazione,TipoOperazione,ChiFa,ADa,CPers,Valore,Categoria,Descrizione FROM  myINSData" 
 					+ " INTERSECT " +
@@ -199,6 +207,7 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 			// *******************************
 			// *-*-*-* Aggiungo al DB scaricato i valori del DB locale che vengono cancellati man mano
+            faseTaskDetail = EnFasePrecisa.UPDATEFULLDB;
 			Cursor cursorLocal = DBINSlocal.fetchDati();		
 			//showToast("Inserimento di " + cursorLocal.getCount() + " dati!");
 			datiInseriti = cursorLocal.getCount();
@@ -225,13 +234,14 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 
 
-
+            if (mCanceled) return false;
 			publishProgress((totProgressLen*3/5));
 			faseTask++;
 
 			// *******************************
 			// *-*-*-* Tramite query aggiorno categoria Generica nel file completo
-			DBINSdownloaded.execSQLsimple("UPDATE " + MyDatabase.DataINStable.TABELLA_INSDATA + " SET Generica = (SELECT  " + MyDatabase.DataINStable.GENERICA_KEY + " FROM  " + MyDatabase.DataINStable.TABELLA_CATEGORIE + "  WHERE  " + MyDatabase.DataINStable.TABELLA_CATEGORIE + ".Valori =  " + MyDatabase.DataINStable.TABELLA_INSDATA + "." + MyDatabase.DataINStable.CATEGORIA_KEY + " )");
+            faseTaskDetail = EnFasePrecisa.CATGENERICA;
+            DBINSdownloaded.execSQLsimple("UPDATE " + MyDatabase.DataINStable.TABELLA_INSDATA + " SET Generica = (SELECT  " + MyDatabase.DataINStable.GENERICA_KEY + " FROM  " + MyDatabase.DataINStable.TABELLA_CATEGORIE + "  WHERE  " + MyDatabase.DataINStable.TABELLA_CATEGORIE + ".Valori =  " + MyDatabase.DataINStable.TABELLA_INSDATA + "." + MyDatabase.DataINStable.CATEGORIA_KEY + " )");
 
 			DBINSlocal.close();
 			DBINSdownloaded.close();
@@ -239,13 +249,15 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 			// *******************************
 			// *-*-*-* Salvo il DB downloaded aggiornato rinominandolo come LOCAL_FULL_DB_FILE
-			java.io.File oldFile = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator + myGlobal.LOCAL_DOWNLOADED_DB_FILE);				
+            faseTaskDetail = EnFasePrecisa.RENDOWNLOADEDDB;
+            java.io.File oldFile = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator + myGlobal.LOCAL_DOWNLOADED_DB_FILE);
 			oldFile.renameTo(new java.io.File( myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator + myGlobal.LOCAL_FULL_DB_FILE));		            	    	
 			//showToast("aggiornato file DB full locale: " + myGlobal.LOCAL_FULL_DB_FILE);
 
 
 			// *******************************
 			// *-*-*-* Preparo l'upload creando in locale una copia del file LOCAL_FULL_DB_FILE con nome REMOTE_DB_FILENAME
+            faseTaskDetail = EnFasePrecisa.COPYFILETOUPLOAD;
 			java.io.File oldFileDB = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE);        		
 			java.io.File newFileDB2 = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.REMOTE_DB_FILENAME);
 			myGlobal.copyFiles(oldFileDB, newFileDB2);
@@ -253,10 +265,12 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 			//Files.copy(oldFileDB, newFileDB);
 
 
+            if (mCanceled) return false;
 
 
 			// *******************************
 			// *-*-*-* Upload del file REMOTE_DB_FILENAME
+            faseTaskDetail = EnFasePrecisa.UPLOADDB;
 			mFileLen = newFileDB2.length();
 			FileInputStream fis = new FileInputStream(newFileDB2);
 			path = mPath + newFileDB2.getName();    
@@ -287,6 +301,7 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 
 			// *******************************
 			// *-*-*-* Operazione terminata
+            faseTaskDetail = EnFasePrecisa.FINE;
 			if (mRequest != null) {
 				mRequest.upload();
 				return true;
@@ -390,7 +405,8 @@ public class SyncAllDBData extends AsyncTask<Void, Long, Boolean> {
 			//showToast(mErrorMsg);
 			textToShow = ("Errore rilevato durante la sincronizzazione:" + System.getProperty("line.separator") +
 					mErrorMsg + System.getProperty("line.separator") +
-					"" + System.getProperty("line.separator") +
+                    "Fase-> " + faseTaskDetail.toString() + System.getProperty("line.separator") +
+                    "" + System.getProperty("line.separator") +
 					"" + System.getProperty("line.separator") +
 					"Conviene rieffettuare l'operazione. Nel caso peggiore cancellare i file locali o forzare un nuovo download" + System.getProperty("line.separator") +
 					"" + System.getProperty("line.separator") +

@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -48,6 +50,16 @@ import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.http.FileContent;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -273,6 +285,111 @@ public class MainActivity extends FragmentActivity {
 
 		final ImageButton buttonReset = (ImageButton)  findViewById(R.id.imgbtnReset);
 		buttonReset.setOnClickListener(new ClickResetButton());
+
+        final Button myButtonProve = (Button) findViewById(R.id.btnProve);
+        myButtonProve.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Prova
+
+                new Thread(new Runnable() {
+                    //Thread to stop network calls on the UI thread
+                    public void run() {
+                        //Request the HTML
+                        // JSON Node names
+                        final String TAG_SUCCESS = "success";
+                        final String TAG_MESSAGE = "message";
+                        final String TAG_SQL = "sql";
+                        final String TAG_NUMROWS = "numrows";
+                        final String TAG_RESULT_ARRAY = "res";
+                        final String TAG_PID = "_id";
+                        final String TAG_VALORE = "Valore";
+
+
+                        webJSONParser jParser = new webJSONParser();
+                        // datiweb JSONArray
+                        JSONArray datiweb = null;
+
+                        String url_all_datiweb = "http://simonefantuzzi.altervista.org/phpDB/get_querysql.php/";
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("_querysql", "SELECT * FROM myINSData"));
+
+                        // getting JSON string from URL
+                        JSONObject json = jParser.makeHttpRequest(url_all_datiweb, "GET", params);
+
+                        try {
+
+                            if (json.getInt(TAG_SUCCESS) == 1) {
+                                // datiweb found
+                                // Getting Array of datiweb
+                                datiweb = json.getJSONArray(TAG_RESULT_ARRAY);
+
+                                // I'm assuming that the JSONArray will contain only JSONObjects with the same propertties
+                                MatrixCursor mc = new MatrixCursor(new String[] {MyDatabase.DataINStable.ID, MyDatabase.DataINStable.DATA_OPERAZIONE_KEY, MyDatabase.DataINStable.CHI_FA_KEY, MyDatabase.DataINStable.A_DA_KEY, MyDatabase.DataINStable.C_PERS_KEY, MyDatabase.DataINStable.VALORE_KEY, MyDatabase.DataINStable.CATEGORIA_KEY, MyDatabase.DataINStable.GENERICA_KEY, MyDatabase.DataINStable.DESCRIZIONE_KEY, MyDatabase.DataINStable.NOTE_KEY, MyDatabase.DataINStable.SPECIAL_NOTE_KEY});
+                                for (int i = 0; i < datiweb.length(); i++) {
+                                    JSONObject jo = datiweb.getJSONObject(i);
+                                    // extract the properties from the JSONObject and use it with the addRow() method below
+                                    mc.addRow(new Object[] {MyDatabase.DataINStable.ID, MyDatabase.DataINStable.DATA_OPERAZIONE_KEY, MyDatabase.DataINStable.CHI_FA_KEY, MyDatabase.DataINStable.A_DA_KEY, MyDatabase.DataINStable.C_PERS_KEY, MyDatabase.DataINStable.VALORE_KEY, MyDatabase.DataINStable.CATEGORIA_KEY, MyDatabase.DataINStable.GENERICA_KEY, MyDatabase.DataINStable.DESCRIZIONE_KEY, MyDatabase.DataINStable.NOTE_KEY, MyDatabase.DataINStable.SPECIAL_NOTE_KEY});
+                                    Log.e("WEB-FANT", mc.getString(mc.getColumnIndex(MyDatabase.DataINStable.DATA_OPERAZIONE_KEY)));
+                                }
+
+                                // looping through All datiweb
+                                for (int i = 0; i < datiweb.length(); i++) {
+                                    JSONObject c = datiweb.getJSONObject(i);
+
+                                    // Storing each json item in variable
+                                    String id = c.getString(TAG_PID);
+                                    String val = c.getString(TAG_VALORE);
+
+
+
+                                    // adding HashList to ArrayList
+                                    //datiwebList.add(map);
+                                }
+                            } else {
+                                // no datiweb found
+                                // Launch Add New product Activity
+                                /*
+                                Intent i = new Intent(getApplicationContext(),
+                                        NewProductActivity.class);
+                                // Closing all previous activities
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(i);
+                                */
+                                int i = 0;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+/*
+                            HttpParams httpParameters = new BasicHttpParams();
+                            HttpConnectionParams.setConnectionTimeout(httpParameters, 1000);
+                            HttpConnectionParams.setSoTimeout(httpParameters, 1000);
+
+                            HttpClient client = new DefaultHttpClient(httpParameters);
+                            HttpGet request = new HttpGet("http://simonefantuzzi.altervista.org/provasqlite.php");
+                            HttpResponse response = client.execute(request);
+
+                            //Do something with the response
+                            // Get the response
+                            BufferedReader rd = new BufferedReader
+                                    (new InputStreamReader(response.getEntity().getContent()));
+
+                            String line = "";
+                            while ((line = rd.readLine()) != null) {
+                                Log.e("Result",line);
+                            }
+                            */
+                    }
+                }).start();
+
+                // Create a new HttpClient and Post Header
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost("http://www.google.it");
+                HttpGet request = new HttpGet("http://http://simonefantuzzi.altervista.org/provasqlite.php");
+
+            }
+        });
+
 
 		initTextValue();
 
@@ -780,26 +897,6 @@ public class MainActivity extends FragmentActivity {
 			// non farlo qua se no noon upload niente
 			//newFile.delete();
 			return true;
-
-
-			/*	
-    	case R.id.action_downloadDB:
-    		DownloadFromDropbox download1 = new DownloadFromDropbox(this, myGlobal.mApiDropbox, myGlobal.DROPBOX_INS_DIR, myGlobal.REMOTE_DB_FILENAME,
-    				myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator + myGlobal.LOCAL_DOWNLOADED_DB_FILE);
-    		download1.execute();
-    		return true;
-
-    	case R.id.action_downloadDBfull:
-    		DownloadFromDropbox download2 = new DownloadFromDropbox(this, myGlobal.mApiDropbox, myGlobal.DROPBOX_INS_DIR, myGlobal.REMOTE_DB_FILENAME,
-    				myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator + myGlobal.LOCAL_FULL_DB_FILE);
-    		download2.execute();
-    		return true;
-
-	    case R.id.action_upload:        	
-    		credential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
-    		startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-    		return true;
-			 */
 
 
 

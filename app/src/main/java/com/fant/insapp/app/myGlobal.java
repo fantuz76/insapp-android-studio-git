@@ -32,6 +32,9 @@ public class myGlobal extends Application
 
 	public static final String TAG = "FANTUZ_Activity";
 
+    public static final String PREFERENCE_APP_FILE = "PreferencesINSApp";
+    public static final String PREFERENCE_APP_LASTCHIFA = "UltimoChiFa";
+
 	public static final String LOCAL_DB_FILENAME = "INSbase_loc.sqlite";	
 	public static final String REMOTE_DB_FILENAME = "INSbase.sqlite";
 	public static final String REMOTE_DB_FILENAME_EMPTY = "INSbase_loc_empty.sqlite";
@@ -53,6 +56,7 @@ public class myGlobal extends Application
     public static String[] arrGenerica;
 
 	public static MyDatabase DBINSlocal;
+    public static MyDatabase DBINSLocalFull;
 
 	Context mContext;
 
@@ -210,7 +214,6 @@ public class myGlobal extends Application
 	// Preparo file database, se non ci sono li crea 
 	// *************************************************************************    
 	public static  boolean prepDBfilesisOK(final Context ctx, boolean _forceDownladlocalEmpty, boolean _forceDownladlocalFull, final boolean backupIfPossible){
-		MyDatabase DBINStmp;
 		String tmpmsg;
 
 
@@ -287,12 +290,12 @@ public class myGlobal extends Application
 				.show();    			
 
 			} else {
-				DBINStmp = new MyDatabase(
+                DBINSLocalFull = new MyDatabase(
 						ctx, 
 						myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE);
 
-				DBINStmp.open();
-				DBINStmp.close();
+                DBINSLocalFull.open();
+                DBINSLocalFull.close();
 				myGlobal.statoDBLocalFull = true;
 			}
 

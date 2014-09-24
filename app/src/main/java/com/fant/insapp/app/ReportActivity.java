@@ -170,15 +170,15 @@ public class ReportActivity extends ListActivity {
 
 		String tmpchifa;
 
-		float ComuniIW = getResultSpesa(DataInizio, DataFine, "C", "IWBank");
+		float ComuniIW = getResultSpesa(DataInizio, DataFine, "C", "IWBank") + getResultSpesa(DataInizio, DataFine, "C", "Conad Card");
 		float ComuniJB = getResultSpesa(DataInizio, DataFine, "C", "JB") + getResultSpesa(DataInizio, DataFine, "C", "Fineco") + getResultSpesa(DataInizio, DataFine, "C", "LaBanque");
 		float ComuniSF = getResultSpesa(DataInizio, DataFine, "C", "SF") + getResultSpesa(DataInizio, DataFine, "C", "MPS");
 
-		float PersJBIW = getResultSpesa(DataInizio, DataFine, "JB", "IWBank");
+		float PersJBIW = getResultSpesa(DataInizio, DataFine, "JB", "IWBank") + getResultSpesa(DataInizio, DataFine, "JB", "Conad Card");
 		float PersJBJB = getResultSpesa(DataInizio, DataFine, "JB", "JB") + getResultSpesa(DataInizio, DataFine, "JB", "Fineco") + getResultSpesa(DataInizio, DataFine, "JB", "LaBanque");
 		float PersJBSF = getResultSpesa(DataInizio, DataFine, "JB", "SF") + getResultSpesa(DataInizio, DataFine, "JB", "MPS");
 
-		float PersSFIW = getResultSpesa(DataInizio, DataFine, "SF", "IWBank");
+		float PersSFIW = getResultSpesa(DataInizio, DataFine, "SF", "IWBank") + getResultSpesa(DataInizio, DataFine, "SF", "Conad Card");
 		float PersSFJB = getResultSpesa(DataInizio, DataFine, "SF", "JB") + getResultSpesa(DataInizio, DataFine, "SF", "Fineco") + getResultSpesa(DataInizio, DataFine, "SF", "LaBanque");
 		float PersSFSF = getResultSpesa(DataInizio, DataFine, "SF", "SF") + getResultSpesa(DataInizio, DataFine, "SF", "MPS");
 
@@ -348,8 +348,6 @@ public class ReportActivity extends ListActivity {
 		seriePie.add("Spese IW", ComuniIW);
 		seriePie.add("Spese JB", ComuniJB);
 		seriePie.add("Spese SF", ComuniSF);
-
-		//getResultSpesa(DataInizio, DataFine, "C", "IWBank");
 
 		String[] datestr = DataInizio.toString().split("-");
 		int yearInizio = Integer.valueOf(datestr[0]);

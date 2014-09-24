@@ -189,9 +189,7 @@ public class MainActivity extends FragmentActivity {
 		// Display the proper UI state if logged in or not
 		setDropboxLoggedIn(myGlobal.mApiDropbox.getSession().isLinked());
 
-
-
-		Spinner spinner;
+        Spinner spinner;
 		ArrayAdapter<CharSequence> adapter;
 
 		textTitle = (TextView) findViewById(R.id.textViewTitle);
@@ -204,21 +202,23 @@ public class MainActivity extends FragmentActivity {
 		if (myGlobal.statoDBLocal) {
 			// Se Database tutto a posto inizializzo array con valori 
 			myGlobal.DBINSlocal.open();
+            myGlobal.DBINSLocalFull.open();
 			List<String> mylistr; 
-			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_TIPOOPERAZIONE);
+			mylistr = myGlobal.DBINSLocalFull.fetchListValori(MyDatabase.DataINStable.TABELLA_TIPOOPERAZIONE);
 			myGlobal.arrTipoOperazione = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_CHIFA);
+			mylistr = myGlobal.DBINSLocalFull.fetchListValori(MyDatabase.DataINStable.TABELLA_CHIFA);
 			myGlobal.arrChiFa = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_CPERSONALI);
+			mylistr = myGlobal.DBINSLocalFull.fetchListValori(MyDatabase.DataINStable.TABELLA_CPERSONALI);
 			myGlobal.arrCPersonale = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_CATEGORIE);
+			mylistr = myGlobal.DBINSLocalFull.fetchListValori(MyDatabase.DataINStable.TABELLA_CATEGORIE);
 			myGlobal.arrCategoria = mylistr.toArray(new String[0]);
-			mylistr = myGlobal.DBINSlocal.fetchListValori(MyDatabase.DataINStable.TABELLA_ADA);
+			mylistr = myGlobal.DBINSLocalFull.fetchListValori(MyDatabase.DataINStable.TABELLA_ADA);
 			myGlobal.arrADa = mylistr.toArray(new String[0]);
-            mylistr = myGlobal.DBINSlocal.fetchListValoriFromQuery("SELECT Generica FROM " + MyDatabase.DataINStable.TABELLA_CATEGORIE + " GROUP BY Generica ORDER BY Generica");
+            mylistr = myGlobal.DBINSLocalFull.fetchListValoriFromQuery("SELECT Generica FROM " + MyDatabase.DataINStable.TABELLA_CATEGORIE + " GROUP BY Generica ORDER BY Generica");
             myGlobal.arrGenerica = mylistr.toArray(new String[0]);
 
 			myGlobal.DBINSlocal.close();
+            myGlobal.DBINSLocalFull.close();
 		} else {
 			// in mancanza del DB metto tutti List vuoti
 			List<String> mylistr =  new ArrayList<String>();
@@ -304,7 +304,7 @@ public class MainActivity extends FragmentActivity {
                         final String TAG_PID = "_id";
                         final String TAG_VALORE = "Valore";
 
-
+/*
                         webJSONParser jParser = new webJSONParser();
                         // datiweb JSONArray
                         JSONArray datiweb = null;
@@ -348,18 +348,20 @@ public class MainActivity extends FragmentActivity {
                             } else {
                                 // no datiweb found
                                 // Launch Add New product Activity
-                                /*
-                                Intent i = new Intent(getApplicationContext(),
-                                        NewProductActivity.class);
-                                // Closing all previous activities
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(i);
-                                */
+                                //
+                                //Intent i = new Intent(getApplicationContext(),
+                                //        NewProductActivity.class);
+                                //// Closing all previous activities
+                                //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                //startActivity(i);
+
                                 int i = 0;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+                        */
 /*
                             HttpParams httpParameters = new BasicHttpParams();
                             HttpConnectionParams.setConnectionTimeout(httpParameters, 1000);
@@ -685,7 +687,7 @@ public class MainActivity extends FragmentActivity {
 							fr.close();
 							showToast("Scrittura spreadsheet completata");
 
-							// adesso, una volta caricato lo rinomino cos� resta nella SD del telefono come backup
+							// adesso, una volta caricato lo rinomino così resta nella SD del telefono come backup
 							java.io.File oldFile = new java.io.File(fileNameFull);
 							//Now invoke the renameTo() method on the reference, oldFile in this case
 							oldFile.renameTo(new java.io.File(fileNameFull.replace(".txt", "_" + myGlobal.formattedDate() + ".txt")));		            	    	
@@ -870,7 +872,7 @@ public class MainActivity extends FragmentActivity {
 			}
 
 			// stessa cosa con il file database
-			// adesso, una volta caricato lo rinomino cos� resta nella SD del telefono come backup
+			// adesso, una volta caricato lo rinomino così resta nella SD del telefono come backup
 			java.io.File oldFileDB = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE);
 			java.io.File newFileDB = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.LOCAL_FULL_DB_FILE.replace(".sqlite", "_" + myGlobal.formattedDate() + ".sqlite"));
 			java.io.File newFileDB2 = new java.io.File(myGlobal.getStorageDatabaseFantDir().getPath() + java.io.File.separator +  myGlobal.REMOTE_DB_FILENAME);
@@ -952,7 +954,7 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		if (!myGlobal.checkValore(valValore)) {
-			showToast("Valore � Sbagliato");
+			showToast("Valore Sbagliato");
 			return false;
 		} 
 
@@ -1079,7 +1081,7 @@ public class MainActivity extends FragmentActivity {
 			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {			      	
 
-					// Scrivo dati nel file, modalit� append	    	    	
+					// Scrivo dati nel file, modalità append
 					try  {
 						FileWriter fw = new FileWriter(fileNameFull, true);
 
@@ -1091,7 +1093,7 @@ public class MainActivity extends FragmentActivity {
 						fw.append(valPersonale + '\t');
 						fw.append(valValore + '\t');
 						fw.append(valCategoria + '\t');
-						fw.append('\t');					// Categoria Generica � vuota la calcola poi file excel
+						fw.append('\t');					// Categoria Generica è vuota la calcola poi file excel
 						fw.append(valDescrizione + '\t');
 						fw.append(valNote + '\t');
 
@@ -1152,6 +1154,8 @@ public class MainActivity extends FragmentActivity {
 	class ClickOKButton implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
+            SharedPreferences myAppSettings  = getSharedPreferences(myGlobal.PREFERENCE_APP_FILE, 0);
+
 			// Perform action on click
 			final EditText editTextData = (EditText) findViewById(R.id.TextData);
 			valData = editTextData.getText().toString();
@@ -1161,6 +1165,7 @@ public class MainActivity extends FragmentActivity {
 
 			final Spinner editTextChiFa = (Spinner) findViewById(R.id.SpinnerChiFa);    				
 			valChiFa = editTextChiFa.getSelectedItem().toString();
+            int posChiFa = editTextChiFa.getSelectedItemPosition();
 
 			//final Spinner editTextADa = (Spinner) findViewById(R.id.SpinnerADa);    				
 			//valADa = editTextADa.getSelectedItem().toString();
@@ -1183,8 +1188,13 @@ public class MainActivity extends FragmentActivity {
 
 			if (checkAllValues()) {
 				saveDataOnFile() ;
+
+                //salvo alcune preferenze nei settings
+                SharedPreferences.Editor editor = myAppSettings.edit();
+                editor.putInt(myGlobal.PREFERENCE_APP_LASTCHIFA, posChiFa);
+                editor.commit();
 			} else {
-				showToast("Dati non corretti nessun file caricato");
+				showToast("Dati non corretti nessun dato aggiunto");
 			}
 
 		}
@@ -1401,6 +1411,7 @@ public class MainActivity extends FragmentActivity {
 
 
 	public void initTextValue() {
+        SharedPreferences myAppSettings  = getSharedPreferences(myGlobal.PREFERENCE_APP_FILE, 0);
 
 		textTitle.setTextColor(getResources().getColor(R.color.TitleYellow));
 
@@ -1419,6 +1430,7 @@ public class MainActivity extends FragmentActivity {
 
 		myeditText = (EditText) findViewById(R.id.TextValore);
 		myeditText.setText("0");
+        myeditText.requestFocus();
 
 		myeditText = (EditText) findViewById(R.id.TextNote);
 		myeditText.setText("");
@@ -1427,8 +1439,13 @@ public class MainActivity extends FragmentActivity {
 		spinner = (Spinner) findViewById(R.id.SpinnerTipoOper);
 		spinner.setSelection(0, true);
 
-		spinner = (Spinner) findViewById(R.id.SpinnerChiFa);
-		spinner.setSelection(0, true);
+        // prendo la posizione da selezionare nei settings, se non esiste prendo la 0
+        int numLastChiFa = myAppSettings.getInt(myGlobal.PREFERENCE_APP_LASTCHIFA,0);
+        spinner = (Spinner) findViewById(R.id.SpinnerChiFa);
+        if ((numLastChiFa < spinner.getAdapter().getCount()) && (numLastChiFa >= 0))
+		    spinner.setSelection(numLastChiFa, true);
+        else
+            spinner.setSelection(0, true);
 
 
 		spinner = (Spinner) findViewById(R.id.SpinnerPersonale);
@@ -1442,7 +1459,7 @@ public class MainActivity extends FragmentActivity {
 
 		// A/Da
 		spinADa = (Spinner) findViewById(R.id.SpinnerADa);
-		spinADa.setSelection(0, true);
+        spinADa.setSelection(0, true);
 
 	}
 
